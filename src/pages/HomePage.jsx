@@ -1,4 +1,3 @@
-// src/components/HomePage.jsx
 import React from "react";
 
 const HomePage = () => {
