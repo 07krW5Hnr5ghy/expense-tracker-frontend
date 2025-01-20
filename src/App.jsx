@@ -1,17 +1,23 @@
 import { useState } from 'react'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
+import Navbar from './components/Navbar';
 import './App.css'
 
 function App() {
   const [count, setCount] = useState(0)
 
   return (
-    <>
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <h1 className="text-3xl font-bold text-blue-500">Hello, Tailwind CSS!</h1>
-      </div>
-    </>
+    <Router>
+      <Navbar />
+      {/* <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/expenses" element={<ExpensesPage />} />
+      </Routes> */}
+    </Router>
   )
 }
 
