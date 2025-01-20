@@ -6,7 +6,13 @@ const api = axios.create({
   baseURL: API_BASE_URL,
 });
 
-export const registerUser = (data) => api.post('/auth/register', data);
+export const registerUser = async (data) => {
+  return await fetch(`${API_BASE_URL}/auth/signup`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+};
 export const loginUser = async (data) => {
   const response = await fetch(`${API_BASE_URL}/auth/login`,{
     method:'POST',

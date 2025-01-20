@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { registerUser } from '../services/api';
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
@@ -46,12 +47,7 @@ const RegisterPage = () => {
 
     if (validateForm()) {
       try {
-        // Replace with your API endpoint
-        const response = await fetch('http://localhost:3001/api/auth/signup', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData),
-        });
+        const response = await registerUser(formData);
 
         if (response.ok) {
           alert('Registration successful! Redirecting to login page.');
