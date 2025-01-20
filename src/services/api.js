@@ -7,7 +7,20 @@ const api = axios.create({
 });
 
 export const registerUser = (data) => api.post('/auth/register', data);
-export const loginUser = (data) => api.post('/auth/login', data);
+export const loginUser = async (data) => {
+  const response = await fetch(`${API_BASE_URL}/auth/login`,{
+    method:'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    throw new Error('Invalid email or password');
+  }
+
+  return await response.json();
+
+}
 export const getExpenses = (token) =>
   api.get('/expenses', { headers: { Authorization: `Bearer ${token}` } });
 export const createExpense = (data, token) =>
