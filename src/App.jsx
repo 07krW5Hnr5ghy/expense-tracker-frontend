@@ -1,20 +1,18 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import HomePage from './pages/HomePage';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import ExpensesPage from './pages/ExpensesPage';
-import Navbar from './components/Navbar';
+import { useState } from 'react'
+import reactLogo from './assets/react.svg'
+import viteLogo from '/vite.svg'
+import './App.css'
 
-const App = () => (
-  <Router>
-    <Navbar />
-    <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
-      <Route path="/expenses" element={<ExpensesPage />} />
-    </Routes>
-  </Router>
-);
+function App() {
+  const [count, setCount] = useState(0)
 
-export default App;
+  return (
+    <>
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <h1 className="text-3xl font-bold text-blue-500">Hello, Tailwind CSS!</h1>
+      </div>
+    </>
+  )
+}
+
+export default App
