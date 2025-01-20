@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
 
 const LoginPage = () => {
+  const {login} = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [validationErrors, setValidationErrors] = useState({ email: "", password: "" });
+  const [fetchError,setFetchError] = useState('');
 
   const validateForm = () => {
     let isValid = true;
@@ -29,12 +32,27 @@ const LoginPage = () => {
     return isValid;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
       console.log("Email:", email);
       console.log("Password:", password);
-      // Add login logic here
+      try{
+        const response = await fetch('http://localhost:3001/login',{
+          method:'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Invalid email or password');
+        }
+  
+        const data = await response.json();
+        login(data.token);
+      }catch (err) {
+        setFetchError(err.message);
+      }
     }
   };
 
@@ -81,6 +99,7 @@ const LoginPage = () => {
           >
             Login
           </button>
+          {fetchError && <p className="text-red-500">{fetchError}</p>}
         </form>
         <div className="text-sm text-center mt-4">
           Don't have an account? {" "}
