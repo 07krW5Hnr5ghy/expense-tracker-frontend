@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
   const {login} = useAuth();
@@ -7,6 +8,7 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [validationErrors, setValidationErrors] = useState({ email: "", password: "" });
   const [fetchError,setFetchError] = useState('');
+  const navigate = useNavigate();
 
   const validateForm = () => {
     let isValid = true;
@@ -38,7 +40,7 @@ const LoginPage = () => {
       console.log("Email:", email);
       console.log("Password:", password);
       try{
-        const response = await fetch('http://localhost:3001/login',{
+        const response = await fetch('http://localhost:3001/api/auth/login',{
           method:'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password }),
@@ -50,7 +52,12 @@ const LoginPage = () => {
   
         const data = await response.json();
         login(data.token);
+
+        if(data.token){
+          navigate('/expenses',{replace:true});
+        }
       }catch (err) {
+        console.log(err);
         setFetchError(err.message);
       }
     }

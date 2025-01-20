@@ -47,7 +47,7 @@ const RegisterPage = () => {
     if (validateForm()) {
       try {
         // Replace with your API endpoint
-        const response = await fetch('/api/register', {
+        const response = await fetch('http://localhost:3001/api/auth/signup', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData),
