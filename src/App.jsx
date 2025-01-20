@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import Navbar from './components/Navbar';
+import HomePage from './pages/HomePage';
 import './App.css'
 
 function App() {
@@ -11,12 +12,12 @@ function App() {
   return (
     <Router>
       <Navbar />
-      {/* <Routes>
+      <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<LoginPage />} />
+        {/* <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/expenses" element={<ExpensesPage />} />
-      </Routes> */}
+        <Route path="/expenses" element={<ExpensesPage />} /> */}
+      </Routes>
     </Router>
   )
 }
