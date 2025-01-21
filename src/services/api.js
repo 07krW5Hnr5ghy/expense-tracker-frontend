@@ -27,9 +27,8 @@ export const loginUser = async (data) => {
   return await response.json();
 
 }
-export const getExpenses = async (token) => {
-  
-  const response = await fetch(`${API_BASE_URL}/expenses`,{
+export const getExpenses = async (token,params) => {
+  const response = await fetch(`${API_BASE_URL}/expenses?${params.toString()}`,{
     method:'GET',
     headers: { Authorization: `Bearer ${token}` },
   });
