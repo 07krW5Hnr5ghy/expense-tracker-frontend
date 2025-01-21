@@ -27,8 +27,20 @@ export const loginUser = async (data) => {
   return await response.json();
 
 }
-export const getExpenses = (token) =>
-  api.get('/expenses', { headers: { Authorization: `Bearer ${token}` } });
+export const getExpenses = async (token) => {
+  
+  const response = await fetch(`${API_BASE_URL}/expenses`,{
+    method:'GET',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!response.ok) {
+    throw new Error('Failed to fetch expenses.');
+  }
+  const data = await response.json();
+  console.log(data);
+  return data;
+}
+  
 export const createExpense = (data, token) =>
   api.post('/expenses', data, { headers: { Authorization: `Bearer ${token}` } });
 export const updateExpense = (id, data, token) =>
