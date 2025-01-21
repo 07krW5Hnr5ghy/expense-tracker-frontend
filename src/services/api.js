@@ -36,7 +36,6 @@ export const getExpenses = async (token,params) => {
     throw new Error('Failed to fetch expenses.');
   }
   const data = await response.json();
-  console.log(data);
   return data;
 }
   

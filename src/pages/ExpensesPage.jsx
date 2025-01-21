@@ -8,7 +8,7 @@ const ExpensesPage = () => {
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [filters,setFilters] = useState({ timeTerm: 'all', startDate: '', endDate: '' });
+  const [filters,setFilters] = useState({ timeTerm: 'all', startDate: '', endDate: '' , category:'all'});
   const [pagination, setPagination] = useState({ page: 1, limit: 10 });
 
   const handleAddExpense = (newExpense) => {
@@ -32,6 +32,10 @@ const ExpensesPage = () => {
     
         if (filters.endDate) {
           queryParams.append('endDate', filters.endDate);
+        }
+
+        if (filters.category !== 'all') {
+          queryParams.append('category', filters.category);
         }
     
         queryParams.append('page', pagination.page);
@@ -80,18 +84,37 @@ const ExpensesPage = () => {
       <div className="mt-8">
         <h2 className="text-xl font-bold mb-4">Expense List</h2>
         <div className="mb-4 space-y-2">
+          {/* Time Filter */}
           <select
             name="timeTerm"
             value={filters.range}
             onChange={handleFilterChange}
-            className="border p-2 rounded w-full"
+            className="border p-2 rounded"
           >
-            <option value="all">All</option>
+            <option value="all">All Times</option>
             <option value="past_week">Past Week</option>
             <option value="past_month">Past Month</option>
             <option value="past_3_months">Last 3 Months</option>
             <option value="custom">Custom Range</option>
           </select>
+
+          {/* Category Filter */}
+          <select
+            name="category"
+            value={filters.category}
+            onChange={handleFilterChange}
+            className="p-2 border rounded ml-2"
+          >
+            <option value="all">All Categories</option>
+            <option value="Groceries">Groceries</option>
+            <option value="Leisure">Leisure</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Utilities">Utilities</option>
+            <option value="Clothing">Clothing</option>
+            <option value="Health">Health</option>
+            <option value="Others">Others</option>
+          </select>
+
           {filters.timeTerm === 'custom' && (
             <div className="flex space-x-2">
               <input
@@ -112,9 +135,10 @@ const ExpensesPage = () => {
           )}
         </div>
 
-        {expenses.length === 0 ? (
-          <p className="text-gray-600">No expenses added yet.</p>
-        ) : (
+        {loading && <p>Loading...</p>}
+        {error && <p className="text-red-500">{error}</p>}
+        {!loading && !error && expenses.length === 0 && <p>No expenses found.</p>}
+        {!loading && !error && expenses.length > 0 && (
           <ul className="space-y-4">
             {expenses.map((expense) => (
               <li key={expense._id} className="bg-white p-4 rounded shadow-md">
@@ -130,7 +154,7 @@ const ExpensesPage = () => {
             ))}
           </ul>
         )}
-
+        
         <div className='flex justify-between items-center mt-4'>
           <button
             disabled={pagination.page === 1}
