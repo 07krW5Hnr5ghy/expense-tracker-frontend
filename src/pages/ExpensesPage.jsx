@@ -15,7 +15,6 @@ const ExpensesPage = () => {
   const [pagination, setPagination] = useState({ page: 1, limit: 10 });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingExpense, setEditingExpense] = useState(null);
-  const [toast, setToast] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedExpenseId, setSelectedExpenseId] = useState(null);
 
@@ -127,10 +126,6 @@ const ExpensesPage = () => {
     setIsModalOpen(true);
   };
 
-  const showToast = (message, type) => {
-    setToast({ message, type });
-  };
-
   const handleDelete = (id) => {
     setSelectedExpenseId(id);
     setIsDialogOpen(true);
@@ -140,7 +135,6 @@ const ExpensesPage = () => {
     try{
       deleteExpense(selectedExpenseId,token,refreshExpenses);
       setIsDialogOpen(false);
-      showToast('Expense deleted successfully!', 'success');
     }catch(error){
       showToast(err.message, 'error');
     }
@@ -223,13 +217,6 @@ const ExpensesPage = () => {
             </div>
           )}
         </div>
-        {toast && (
-          <Toast
-            message={toast.message}
-            type={toast.type}
-            onClose={() => setToast(null)}
-          />
-        )}
         <ConfirmationDialog
           isOpen={isDialogOpen}
           title="Confirm Deletion"

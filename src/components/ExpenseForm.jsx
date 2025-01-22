@@ -1,6 +1,7 @@
 import { useState,useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { createExpense,updateExpense } from '../services/api';
+import Toast from './Toast';
 
 const ExpenseForm = ({ onSuccess ,initialData = {}}) => {
   const {token} = useAuth();
@@ -13,15 +14,16 @@ const ExpenseForm = ({ onSuccess ,initialData = {}}) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [fetchError,setFetchError] = useState(null);
-  const [title, setTitle] = useState(initialData.title || '');
-  const [amount, setAmount] = useState(initialData.amount || '');
-  const [category, setCategory] = useState(initialData.category || '');
-  const [date,setDate] = useState(initialData.date || '');
+  const [title, setTitle] = useState(initialData?.title || '');
+  const [amount, setAmount] = useState(initialData?.amount || '');
+  const [category, setCategory] = useState(initialData?.category || '');
+  const [date,setDate] = useState(initialData?.date || '');
+  const [toast, setToast] = useState(null);
 
   useEffect(()=>{
-    setTitle(initialData.title || '');
-    setAmount(initialData.amount || '');
-    setCategory(initialData.category || '');
+    setTitle(initialData?.title || '');
+    setAmount(initialData?.amount || '');
+    setCategory(initialData?.category || '');
   },[initialData]);
 
   const handleChange = (e) => {
@@ -38,19 +40,20 @@ const ExpenseForm = ({ onSuccess ,initialData = {}}) => {
       
       setError('');
 
-      if(initialData._id){
+      if(initialData?._id){
         console.log({
           title:formData.title ? formData.title : title,
           amount: formData.amount && !isNaN(formData.amount) ? Number(formData.amount) : amount,
           category: formData.category ? formData.category : category,
           date: formData.date ? formData.date : date
         });
-        updateExpense(initialData._id,{
+        updateExpense(initialData?._id,{
           title:formData.title ? formData.title : title,
           amount: formData.amount && !isNaN(formData.amount) ? Number(formData.amount) : amount,
           category: formData.category ? formData.category : category,
           date: formData.date ? formData.date : date
         },token,onSuccess);
+        showToast('Expense updated successfully!', 'success');
       }else{
         if (!formData.title || !formData.amount || !formData.category || !formData.date) {
           setError('All fields are required.');
@@ -61,14 +64,20 @@ const ExpenseForm = ({ onSuccess ,initialData = {}}) => {
           return;
         }
         createExpense(formData,token,onSuccess);
+        showToast('Expense created successfully!', 'success');
+        setFormData({ title: '', amount: '', category: '', date: '' });
       }
 
-      setFormData({ title: '', amount: '', category: '', date: '' });
+      
     }catch(err){
       setFetchError(err.message);
     }finally{
       setLoading(false);
     }
+  };
+
+  const showToast = (message, type) => {
+    setToast({ message, type });
   };
 
   return (
@@ -77,6 +86,13 @@ const ExpenseForm = ({ onSuccess ,initialData = {}}) => {
 
       {error && <p className="text-red-500 mb-4">{error}</p>}
       {fetchError && <p className="text-red-500 mb-4">{fetchError}</p>}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
 
       <div className="mb-4">
         <label htmlFor="title" className="block text-gray-700">Title</label>
@@ -137,7 +153,7 @@ const ExpenseForm = ({ onSuccess ,initialData = {}}) => {
       </div>
 
       <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-        {loading ? 'Saving...' : initialData._id ? 'Update Expense' : 'Add Expense'}
+        {loading ? 'Saving...' : initialData?._id ? 'Update Expense' : 'Add Expense'}
       </button>
     </form>
   );
