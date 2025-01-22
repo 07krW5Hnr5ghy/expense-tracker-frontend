@@ -11,10 +11,6 @@ const ExpensesPage = () => {
   const [filters,setFilters] = useState({ timeTerm: 'all', startDate: '', endDate: '' , category:'all'});
   const [pagination, setPagination] = useState({ page: 1, limit: 10 });
 
-  const handleAddExpense = (newExpense) => {
-    setExpenses((prevExpenses) => [...prevExpenses, { ...newExpense, id: Date.now() }]);
-  };
-
   useEffect(()=>{
     setLoading(true);
     setError(null);
@@ -61,6 +57,45 @@ const ExpensesPage = () => {
     JSON.stringify(pagination.page)
   ]);
 
+  const refreshExpenses = async () => {
+    try{
+      const queryParams = new URLSearchParams();
+
+      if(filters.timeTerm !== 'all'){
+        queryParams.append('timeTerm',filters.timeTerm);
+      }
+
+      if (filters.startDate) {
+        queryParams.append('startDate', filters.startDate);
+      }
+  
+      if (filters.endDate) {
+        queryParams.append('endDate', filters.endDate);
+      }
+
+      if (filters.category !== 'all') {
+        queryParams.append('category', filters.category);
+      }
+  
+      queryParams.append('page', pagination.page);
+      queryParams.append('limit', pagination.limit);
+
+      
+      const response = await getExpenses(token,queryParams);
+      if(response.data){
+        setExpenses(response.data);
+      }
+      setPagination((prev)=>({
+        ...prev,
+        total:response.total
+      }));
+    }catch(error){
+      setError(error.message);
+    }finally {
+      setLoading(false);
+    }
+  };
+
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters((prev) => ({ ...prev, [name]: value }));
@@ -80,7 +115,7 @@ const ExpensesPage = () => {
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-6">Expenses</h1>
-      <ExpenseForm onSubmit={handleAddExpense} />
+      <ExpenseForm onSubmit={refreshExpenses} />
       <div className="mt-8">
         <h2 className="text-xl font-bold mb-4">Expense List</h2>
         <div className="mb-4 space-y-2">

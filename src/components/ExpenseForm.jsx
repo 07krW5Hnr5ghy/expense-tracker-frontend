@@ -1,36 +1,50 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { createExpense } from '../services/api';
 
 const ExpenseForm = ({ onSubmit }) => {
+  const {token} = useAuth();
   const [formData, setFormData] = useState({
     title: '',
     amount: '',
     category: '',
     date: '',
   });
-
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [fetchError,setFetchError] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setLoading(true);
+    setFetchError(null);
 
-    if (!formData.title || !formData.amount || !formData.category || !formData.date) {
-      setError('All fields are required.');
-      return;
+    try{
+      if (!formData.title || !formData.amount || !formData.category || !formData.date) {
+        setError('All fields are required.');
+        return;
+      }
+  
+      if (isNaN(formData.amount) || Number(formData.amount) <= 0) {
+        setError('Amount must be a positive number.');
+        return;
+      }
+  
+      setError('');
+  
+      createExpense(formData,token,onSubmit);
+  
+      setFormData({ title: '', amount: '', category: '', date: '' });
+    }catch(err){
+      setFetchError(err.message);
+    }finally{
+      setLoading(false);
     }
-
-    if (isNaN(formData.amount) || Number(formData.amount) <= 0) {
-      setError('Amount must be a positive number.');
-      return;
-    }
-
-    setError('');
-    onSubmit(formData);
-    setFormData({ title: '', amount: '', category: '', date: '' });
   };
 
   return (
@@ -38,6 +52,7 @@ const ExpenseForm = ({ onSubmit }) => {
       <h2 className="text-lg font-bold mb-4">Add New Expense</h2>
 
       {error && <p className="text-red-500 mb-4">{error}</p>}
+      {fetchError && <p className="text-red-500 mb-4">{fetchError}</p>}
 
       <div className="mb-4">
         <label htmlFor="title" className="block text-gray-700">Title</label>
@@ -96,7 +111,7 @@ const ExpenseForm = ({ onSubmit }) => {
       </div>
 
       <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-        Add Expense
+        {loading ? 'Saving...' : 'Add Expense'}
       </button>
     </form>
   );

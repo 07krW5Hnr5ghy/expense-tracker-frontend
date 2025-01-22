@@ -39,8 +39,24 @@ export const getExpenses = async (token,params) => {
   return data;
 }
   
-export const createExpense = (data, token) =>
-  api.post('/expenses', data, { headers: { Authorization: `Bearer ${token}` } });
+export const createExpense = async (data, token, onSuccess) => {
+  const response = await fetch(`${API_BASE_URL}/expenses`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to create expense');
+  }
+
+  onSuccess();
+
+}
+  
 export const updateExpense = (id, data, token) =>
   api.put(`/expenses/${id}`, data, { headers: { Authorization: `Bearer ${token}` } });
 export const deleteExpense = (id, token) =>
