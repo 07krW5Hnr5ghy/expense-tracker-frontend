@@ -57,8 +57,22 @@ export const createExpense = async (data, token, onSuccess) => {
 
 }
   
-export const updateExpense = (id, data, token) =>
-  api.put(`/expenses/${id}`, data, { headers: { Authorization: `Bearer ${token}` } });
+export const updateExpense = async (id, data, token,onSuccess) => {
+  console.log(id);
+  const response = await fetch(`${API_BASE_URL}/expenses/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) {
+    throw new Error('Failed to update expense');
+  }
+  onSuccess();
+}
+  
 export const deleteExpense = (id, token) =>
   api.delete(`/expenses/${id}`, { headers: { Authorization: `Bearer ${token}` } });
 

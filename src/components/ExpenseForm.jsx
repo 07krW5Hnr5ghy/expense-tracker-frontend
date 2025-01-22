@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { createExpense } from '../services/api';
+import { createExpense,updateExpense } from '../services/api';
 
-const ExpenseForm = ({ onSuccess }) => {
+const ExpenseForm = ({ onSuccess ,initialData = {}}) => {
   const {token} = useAuth();
   const [formData, setFormData] = useState({
     title: '',
@@ -13,6 +13,16 @@ const ExpenseForm = ({ onSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [fetchError,setFetchError] = useState(null);
+  const [title, setTitle] = useState(initialData.title || '');
+  const [amount, setAmount] = useState(initialData.amount || '');
+  const [category, setCategory] = useState(initialData.category || '');
+  const [date,setDate] = useState(initialData.date || '');
+
+  useEffect(()=>{
+    setTitle(initialData.title || '');
+    setAmount(initialData.amount || '');
+    setCategory(initialData.category || '');
+  },[initialData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -25,19 +35,34 @@ const ExpenseForm = ({ onSuccess }) => {
     setFetchError(null);
 
     try{
-      if (!formData.title || !formData.amount || !formData.category || !formData.date) {
-        setError('All fields are required.');
-        return;
-      }
-  
-      if (isNaN(formData.amount) || Number(formData.amount) <= 0) {
-        setError('Amount must be a positive number.');
-        return;
-      }
-  
+      
       setError('');
-      createExpense(formData,token,onSuccess);
-  
+
+      if(initialData._id){
+        console.log({
+          title:formData.title ? formData.title : title,
+          amount: formData.amount && !isNaN(formData.amount) ? Number(formData.amount) : amount,
+          category: formData.category ? formData.category : category,
+          date: formData.date ? formData.date : date
+        });
+        updateExpense(initialData._id,{
+          title:formData.title ? formData.title : title,
+          amount: formData.amount && !isNaN(formData.amount) ? Number(formData.amount) : amount,
+          category: formData.category ? formData.category : category,
+          date: formData.date ? formData.date : date
+        },token,onSuccess);
+      }else{
+        if (!formData.title || !formData.amount || !formData.category || !formData.date) {
+          setError('All fields are required.');
+          return;
+        }
+        if (isNaN(formData.amount) || Number(formData.amount) <= 0) {
+          setError('Amount must be a positive number.');
+          return;
+        }
+        createExpense(formData,token,onSuccess);
+      }
+
       setFormData({ title: '', amount: '', category: '', date: '' });
     }catch(err){
       setFetchError(err.message);
@@ -59,6 +84,7 @@ const ExpenseForm = ({ onSuccess }) => {
           type="text"
           id="title"
           name="title"
+          placeholder={title}
           value={formData.title}
           onChange={handleChange}
           className="w-full border border-gray-300 p-2 rounded mt-1"
@@ -71,6 +97,7 @@ const ExpenseForm = ({ onSuccess }) => {
           type="number"
           id="amount"
           name="amount"
+          placeholder={amount}
           value={formData.amount}
           onChange={handleChange}
           className="w-full border border-gray-300 p-2 rounded mt-1"
@@ -110,7 +137,7 @@ const ExpenseForm = ({ onSuccess }) => {
       </div>
 
       <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-        {loading ? 'Saving...' : 'Add Expense'}
+        {loading ? 'Saving...' : initialData._id ? 'Update Expense' : 'Add Expense'}
       </button>
     </form>
   );

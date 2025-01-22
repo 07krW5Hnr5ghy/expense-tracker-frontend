@@ -12,6 +12,7 @@ const ExpensesPage = () => {
   const [filters,setFilters] = useState({ timeTerm: 'all', startDate: '', endDate: '' , category:'all'});
   const [pagination, setPagination] = useState({ page: 1, limit: 10 });
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingExpense, setEditingExpense] = useState(null);
 
   useEffect(()=>{
     setLoading(true);
@@ -113,7 +114,13 @@ const ExpensesPage = () => {
 
   const toggleModal = () => {
     setIsModalOpen((prev) => !prev);
+    if (isModalOpen) setEditingExpense(null); 
   }
+
+  const handleEdit = (expense) => {
+    setEditingExpense(expense);
+    setIsModalOpen(true);
+  };
 
   if (loading) return <p className="text-center">Loading expenses...</p>;
   if (error) return <p className="text-center text-red-500">Error: {error}</p>;
@@ -136,6 +143,7 @@ const ExpensesPage = () => {
             toggleModal(); 
             refreshExpenses();
           }}
+          initialData={editingExpense}
         />
       </Modal>
       <div className="mt-8">
@@ -203,6 +211,12 @@ const ExpensesPage = () => {
                     <h3 className="font-bold text-lg">{expense.title}</h3>
                     <p className="text-gray-600">{expense.category}</p>
                     <p className="text-gray-600">{expense.date}</p>
+                    <button
+                    onClick={() => handleEdit(expense)}
+                    className="text-blue-500 hover:underline"
+                    >
+                      Edit
+                    </button>
                   </div>
                   <div className="font-bold text-blue-600">${expense.amount}</div>
                 </div>
