@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { createExpense } from '../services/api';
 
-const ExpenseForm = ({ onSubmit }) => {
+const ExpenseForm = ({ onSuccess }) => {
   const {token} = useAuth();
   const [formData, setFormData] = useState({
     title: '',
@@ -36,8 +36,7 @@ const ExpenseForm = ({ onSubmit }) => {
       }
   
       setError('');
-  
-      createExpense(formData,token,onSubmit);
+      createExpense(formData,token,onSuccess);
   
       setFormData({ title: '', amount: '', category: '', date: '' });
     }catch(err){

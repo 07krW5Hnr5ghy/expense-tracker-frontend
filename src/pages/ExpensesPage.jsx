@@ -1,5 +1,6 @@
 import { useState,useEffect } from 'react';
 import ExpenseForm from '../components/ExpenseForm';
+import Modal from '../components/Modal';
 import { getExpenses } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
@@ -10,6 +11,7 @@ const ExpensesPage = () => {
   const [error, setError] = useState(null);
   const [filters,setFilters] = useState({ timeTerm: 'all', startDate: '', endDate: '' , category:'all'});
   const [pagination, setPagination] = useState({ page: 1, limit: 10 });
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(()=>{
     setLoading(true);
@@ -109,15 +111,34 @@ const ExpensesPage = () => {
     }));
   }
 
+  const toggleModal = () => {
+    setIsModalOpen((prev) => !prev);
+  }
+
   if (loading) return <p className="text-center">Loading expenses...</p>;
   if (error) return <p className="text-center text-red-500">Error: {error}</p>;
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Expenses</h1>
-      <ExpenseForm onSubmit={refreshExpenses} />
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Expenses</h1>
+        <button
+          onClick={toggleModal}
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        >
+          Add Expense
+        </button>
+      </div>
+      {/* Modal with ExpenseForm */}
+      <Modal isOpen={isModalOpen} onClose={toggleModal}>
+        <ExpenseForm
+          onSuccess={() => {
+            toggleModal(); 
+            refreshExpenses();
+          }}
+        />
+      </Modal>
       <div className="mt-8">
-        <h2 className="text-xl font-bold mb-4">Expense List</h2>
         <div className="mb-4 space-y-2">
           {/* Time Filter */}
           <select
