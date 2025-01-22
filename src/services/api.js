@@ -73,7 +73,17 @@ export const updateExpense = async (id, data, token,onSuccess) => {
   onSuccess();
 }
   
-export const deleteExpense = (id, token) =>
-  api.delete(`/expenses/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+export const deleteExpense = async (id, token, onSuccess) => {
+  const response = await fetch(`${API_BASE_URL}/expenses/${id}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  if (!response.ok) {
+    throw new Error('Failed to delete expense');
+  }
+  onSuccess();
+}
 
 export default api;

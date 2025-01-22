@@ -1,7 +1,7 @@
 import { useState,useEffect } from 'react';
 import ExpenseForm from '../components/ExpenseForm';
 import Modal from '../components/Modal';
-import { getExpenses } from '../services/api';
+import { getExpenses,deleteExpense } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
 const ExpensesPage = () => {
@@ -211,12 +211,20 @@ const ExpensesPage = () => {
                     <h3 className="font-bold text-lg">{expense.title}</h3>
                     <p className="text-gray-600">{expense.category}</p>
                     <p className="text-gray-600">{expense.date}</p>
-                    <button
-                    onClick={() => handleEdit(expense)}
-                    className="text-blue-500 hover:underline"
-                    >
-                      Edit
-                    </button>
+                    <div className='space-x-2'>
+                      <button
+                      onClick={() => handleEdit(expense)}
+                      className="text-blue-500 hover:underline"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => deleteExpense(expense._id,token,refreshExpenses)}
+                        className="text-red-500 hover:underline"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </div>
                   <div className="font-bold text-blue-600">${expense.amount}</div>
                 </div>
