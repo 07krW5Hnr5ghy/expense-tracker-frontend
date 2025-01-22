@@ -1,6 +1,8 @@
 import { useState,useEffect } from 'react';
 import ExpenseForm from '../components/ExpenseForm';
 import Modal from '../components/Modal';
+import Toast from '../components/Toast';
+import ConfirmationDialog from '../components/ConfirmationDialog';
 import { getExpenses,deleteExpense } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
@@ -13,6 +15,9 @@ const ExpensesPage = () => {
   const [pagination, setPagination] = useState({ page: 1, limit: 10 });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingExpense, setEditingExpense] = useState(null);
+  const [toast, setToast] = useState(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedExpenseId, setSelectedExpenseId] = useState(null);
 
   useEffect(()=>{
     setLoading(true);
@@ -122,6 +127,26 @@ const ExpensesPage = () => {
     setIsModalOpen(true);
   };
 
+  const showToast = (message, type) => {
+    setToast({ message, type });
+  };
+
+  const handleDelete = (id) => {
+    setSelectedExpenseId(id);
+    setIsDialogOpen(true);
+  };
+
+  const confirmDelete = () => {
+    try{
+      deleteExpense(selectedExpenseId,token,refreshExpenses);
+      setIsDialogOpen(false);
+      showToast('Expense deleted successfully!', 'success');
+    }catch(error){
+      showToast(err.message, 'error');
+    }
+    
+  }
+
   if (loading) return <p className="text-center">Loading expenses...</p>;
   if (error) return <p className="text-center text-red-500">Error: {error}</p>;
 
@@ -198,7 +223,20 @@ const ExpensesPage = () => {
             </div>
           )}
         </div>
-
+        {toast && (
+          <Toast
+            message={toast.message}
+            type={toast.type}
+            onClose={() => setToast(null)}
+          />
+        )}
+        <ConfirmationDialog
+          isOpen={isDialogOpen}
+          title="Confirm Deletion"
+          message="Are you sure you want to delete this expense? This action cannot be undone."
+          onConfirm={confirmDelete}
+          onCancel={() => setIsDialogOpen(false)}
+        />    
         {loading && <p>Loading...</p>}
         {error && <p className="text-red-500">{error}</p>}
         {!loading && !error && expenses.length === 0 && <p>No expenses found.</p>}
@@ -219,7 +257,7 @@ const ExpensesPage = () => {
                         Edit
                       </button>
                       <button
-                        onClick={() => deleteExpense(expense._id,token,refreshExpenses)}
+                        onClick={() => handleDelete(expense._id)}
                         className="text-red-500 hover:underline"
                       >
                         Delete
@@ -232,6 +270,8 @@ const ExpensesPage = () => {
             ))}
           </ul>
         )}
+
+        
         
         <div className='flex justify-between items-center mt-4'>
           <button
