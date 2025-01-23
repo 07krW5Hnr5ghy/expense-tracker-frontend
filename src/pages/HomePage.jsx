@@ -1,6 +1,8 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const HomePage = () => {
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
       <header className="py-8 text-center">
@@ -50,7 +52,7 @@ const HomePage = () => {
         </div>
 
         <div className="mt-8">
-          <button className="px-6 py-3 text-lg font-medium bg-indigo-700 hover:bg-indigo-800 rounded-lg shadow-md">
+          <button className="px-6 py-3 text-lg font-medium bg-indigo-700 hover:bg-indigo-800 rounded-lg shadow-md" onClick={()=>{navigate("/register")}}>
             Get Started
           </button>
         </div>
