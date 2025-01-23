@@ -144,6 +144,9 @@ const ExpensesPage = () => {
   if (loading) return <p className="text-center">Loading expenses...</p>;
   if (error) return <p className="text-center text-red-500">Error: {error}</p>;
 
+  // Calculate total expense amount
+  const totalAmount = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-4">
@@ -224,6 +227,11 @@ const ExpensesPage = () => {
           onConfirm={confirmDelete}
           onCancel={() => setIsDialogOpen(false)}
         />    
+        {/* Total Expense Summary */}
+        <div className="mb-4 p-4 bg-blue-100 text-blue-800 rounded">
+          <h2 className="text-xl font-semibold">Total Expenses</h2>
+          <p className="text-lg">${formatPrice(totalAmount)}</p>
+        </div>
         {loading && <p>Loading...</p>}
         {error && <p className="text-red-500">{error}</p>}
         {!loading && !error && expenses.length === 0 && <p>No expenses found.</p>}
