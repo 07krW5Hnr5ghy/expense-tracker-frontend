@@ -43,7 +43,7 @@ const LoginPage = () => {
         const data = await loginUser({ email, password });
 
         if(data.token){
-          login(data.token);
+          login(data.token,data.name);
           navigate('/expenses',{replace:true});
         }
       }catch (err) {

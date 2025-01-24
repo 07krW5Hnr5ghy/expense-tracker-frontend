@@ -1,9 +1,14 @@
 import { Link } from "react-router-dom";
 import {useAuth} from "../context/AuthContext";
-import LogoutButton from "./LogoutButton";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
-  const {isAuthenticated} = useAuth();
+  const {isAuthenticated,logout,username} = useAuth();
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    logout();
+    navigate('/login'); 
+  };
   return (
     <nav className="bg-blue-600 text-white shadow-md sticky top-0 z-50">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center w-full">
@@ -15,10 +20,15 @@ const Navbar = () => {
         <div className="space-x-4">
         {isAuthenticated ? (
           <>
-            <Link to="/expenses" className="hover:underline">
-              Expenses
-            </Link>
-            <LogoutButton />
+            <span className="text-sm">
+                <strong>{username}</strong>
+            </span>
+            <button
+              onClick={handleLogout}
+              className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition"
+            >
+              Logout
+            </button>
           </>
         ) : (
           <>
